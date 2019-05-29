@@ -105,6 +105,8 @@ venv.bak/
 # vscode
 .vscode/
 
+.idea/*
+
 # logs
 logs/
 
@@ -113,3 +115,5 @@ checkpoints/
 
 # test
 test.py
+
+data-bin/
