@@ -22,14 +22,11 @@ class CRNN(nn.Module):
         self.dropout = nn.Dropout(p=drop)
         self.fc = nn.Linear(hidden_size * 2, vocab_size)
 
-    def forward(self, image, apply_softmax=False):
+    def forward(self, image):
         feature = self.dropout(self.vgg(image))
         output, final_hidden = self.rnn(feature)
         batch_size, seq_length, feature_size = output.size()
         output = output.contiguous().view(batch_size * seq_length, feature_size)
         output = self.fc(output)
-        if apply_softmax:
-            output = torch.softmax(output, dim=1)
-
-        output = output.view(batch_size, seq_length, -1)
+        output = output.view(batch_size, seq_length, -1).log_softmax(2)
         return output

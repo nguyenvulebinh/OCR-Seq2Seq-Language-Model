@@ -2,3 +2,8 @@ torch
 torchvision
 fairseq
 matplotlib
+scipy
+tensorflow
+numpy
+tqdm
+editdistance

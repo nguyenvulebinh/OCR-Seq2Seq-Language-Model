@@ -9,8 +9,7 @@ class VGG(nn.Module):
 
     def __init__(self):
         super(VGG, self).__init__()
-        vgg16 = models.vgg16_bn()
-        # vgg16.load_state_dict(torch.load("../input/vgg16bn/vgg16_bn.pth"))
+        vgg16 = models.vgg16_bn(pretrained=True)
 
         # Freeze training for all layers
         for param in vgg16.features.parameters():

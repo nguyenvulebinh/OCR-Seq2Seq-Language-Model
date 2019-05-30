@@ -1,0 +1,8 @@
+{
+  "vocab_file": "models-bin/crnn/vocab.json",
+  "checkpoint": "models-bin/crnn/checkpoints/",
+  "image_width": 60,
+  "image_height": 10,
+  "image_channel": 3,
+  "rnn_hidden_size": 128
+}

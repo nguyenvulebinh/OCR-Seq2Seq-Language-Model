@@ -1,2 +1,10 @@
 {
+  "train": {
+    "root_data_path": "./data-bin/raw/1015_Private Test/",
+    "labels_file": "labels.json"
+  },
+  "valid": {
+    "root_data_path": "./data-bin/raw/1015_Private Test/",
+    "labels_file": "labels.json"
+  }
 }

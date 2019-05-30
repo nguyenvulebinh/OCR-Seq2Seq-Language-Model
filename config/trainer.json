@@ -1,0 +1,10 @@
+{
+  "epochs": 50,
+  "batch_size": 2,
+  "lr": 0.001,
+  "n_gpu": 1,
+  "save_freq": null,
+  "save_best": true,
+  "logs_train": "models-bin/crnn/logs/train",
+  "logs_valid": "models-bin/crnn/logs/valid"
+}

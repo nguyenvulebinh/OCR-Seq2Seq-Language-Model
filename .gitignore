@@ -117,3 +117,4 @@ checkpoints/
 test.py
 
 data-bin/
+models-bin/

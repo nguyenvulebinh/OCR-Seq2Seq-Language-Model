@@ -2,6 +2,7 @@ from torchvision import datasets
 import numpy as np
 from PIL import Image
 import json
+import torch
 import os
 
 
@@ -60,11 +61,13 @@ class OCRDataset(datasets.VisionDataset):
         |---labels.json
     """
 
-    def __init__(self, root, transform=None, target_transform=None, is_valid_file=None, labels_file='labels.json'):
+    def __init__(self, root, transform=None, target_transform=None, is_valid_file=None,
+                 labels_file='labels.json', vocab=None, max_length=None):
         super(OCRDataset, self).__init__(root)
         self.transform = transform
         self.target_transform = target_transform
         self.extensions = datasets.folder.IMG_EXTENSIONS
+        self.vocab = vocab
         samples = self.make_dataset(self.root, self.extensions, is_valid_file)
         if len(samples) == 0:
             raise (RuntimeError("Found 0 files in subfolders of: " + self.root + "\n"
@@ -74,9 +77,15 @@ class OCRDataset(datasets.VisionDataset):
         self.loader = datasets.folder.default_loader
         self.samples = samples
         self.targets = [s[1] for s in samples]
+        self.max_label_length = max_length
         try:
             with open(os.path.join(root, labels_file), 'r', encoding='utf-8') as file:
                 self.labels = json.loads(file.read())
+            if max_length is None:
+                self.max_label_length = 0
+                for label in self.labels.values():
+                    if len(label) > self.max_label_length:
+                        self.max_label_length = len(label)
         except:
             self.labels = None
 
@@ -97,6 +106,7 @@ class OCRDataset(datasets.VisionDataset):
         return images
 
     def __len__(self):
+        # return 10
         return len(self.samples)
 
     def __getitem__(self, index):
@@ -112,6 +122,12 @@ class OCRDataset(datasets.VisionDataset):
         if self.transform is not None:
             sample = self.transform(sample)
         file_name = path[path.rindex(os.path.sep) + 1:]
-        target = self.labels.get(file_name)
 
-        return sample, target
+        target = self.labels.get(file_name)
+        target_vector = self.vocab.sentence_to_ids(target, self.max_label_length)
+
+        return {
+            "images": sample,
+            "labels": target_vector,
+            "labels_lengths": len(target)
+        }

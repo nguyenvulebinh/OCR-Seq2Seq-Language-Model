@@ -1,3 +1,6 @@
+import numpy as np
+
+
 class Vocabulary(object):
     """
     Class to process text and extract Vocabulary for mapping
@@ -8,7 +11,7 @@ class Vocabulary(object):
         :param token_to_idx:  a pre-existing map of tokens to indices
         """
         if token_to_idx is None:
-            token_to_idx = {}
+            token_to_idx = {'<blank>': 0, '<pad>': 1}
 
         self._token_to_idx = token_to_idx
 
@@ -22,6 +25,20 @@ class Vocabulary(object):
         return {
             'token_to_idx': self._token_to_idx
         }
+
+    def get_blank_id(self):
+        """
+        Get blank id (blank token in CTC loss)
+        :return:
+        """
+        return self.lookup_token('<blank>')
+
+    def get_pad_id(self):
+        """
+        Get pad id (pad id for missing space)
+        :return:
+        """
+        return self.lookup_token('<pad>')
 
     @classmethod
     def from_serializable(cls, contents):
@@ -69,6 +86,41 @@ class Vocabulary(object):
         if index not in self._idx_to_token:
             raise KeyError("The index {} is not in the Vocabulary".format(index))
         return self._idx_to_token[index]
+
+    def sentence_to_ids(self, sentence, length):
+        """
+        convert sentence to list char ids
+        :param sentence:
+        :param length:
+        :return:
+        """
+        vector = np.zeros(length, dtype=np.int64)
+        indices = [self.lookup_token(char) for char in sentence]
+
+        vector[:len(indices)] = indices
+        vector[len(indices):] = self.get_pad_id()
+        return vector
+
+    def ids_to_sentence(self, indices):
+        """
+        convert id character to sentence
+        :param indices:
+        :return:
+        """
+        sentence = []
+        current_index = -1
+        for index in indices:
+            if index == self.get_pad_id():
+                continue
+            if index != current_index:
+                current_index = index
+                if index == self.get_blank_id():
+                    continue
+                else:
+                    sentence.append(self.lookup_index(index))
+            else:
+                continue
+        return "".join(sentence)
 
     def __str__(self):
         return "<Vocabulary(size={})>".format(len(self))
