@@ -32,6 +32,7 @@ class CRNNTrainer(TrainerBase):
                                           betas=(0.9, 0.98), eps=1e-9)
 
         self.loss_func = CTCLoss(blank=self.vocab.get_blank_id())
+        self.loss_func = self.loss_func.to(self.device)
         super(CRNNTrainer, self)._config_model_and_optimizer(self.model, self.optimizer)
         self.train_data_loader = ocr_loader.get_dataloader(data_config['train']['root_data_path'],
                                                            model_config.get('image_width'),
@@ -47,7 +48,9 @@ class CRNNTrainer(TrainerBase):
                                                            batch_size=trainer_config['batch_size'])
 
         if checkpoint_name is not None:
-            self._resume_checkpoint(checkpoint_name)
+            self._resume_specific_checkpoint(checkpoint_name)
+        else:
+            self._resume_checkpoint()
 
     def show_sample(self, output, ground_truth, num_sample=3):
         output_indices = torch.argmax(output, dim=-1).cpu().numpy()
@@ -79,7 +82,7 @@ class CRNNTrainer(TrainerBase):
             batch_size, steps_lengths, vocab_size = output.size()
             loss = self.loss_func(output.transpose(0, 1),
                                   labels,
-                                  torch.full((batch_size,), steps_lengths, dtype=torch.long).to(device=self.device),
+                                  torch.full((batch_size,), steps_lengths, dtype=torch.int32, device=self.device),
                                   labels_lengths)
 
             loss.backward()

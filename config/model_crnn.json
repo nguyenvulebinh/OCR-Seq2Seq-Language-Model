@@ -1,6 +1,7 @@
 {
   "vocab_file": "models-bin/crnn/vocab.json",
   "checkpoint": "models-bin/crnn/checkpoints/",
+  "metadata_checkpoint": "models-bin/crnn/checkpoints/metadata.ckpt",
   "image_width": 1280,
   "image_height": 60,
   "image_channel": 3,
