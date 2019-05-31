@@ -34,6 +34,7 @@ class TrainerBase:
             self.model = torch.nn.DataParallel(model, device_ids=self.device_ids)
 
         self.optimizer = optimizer
+        self.scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(self.optimizer, patience=2)
 
     def train(self):
         for epoch in range(self.start_epoch, self.epochs + 1):
@@ -52,7 +53,7 @@ class TrainerBase:
                         logging(self.train_logger, value, epoch)
                     elif key == "valid_metrics":
                         logging(self.valid_logger, value, epoch)
-
+            logging(self.train_logger, {"learning_rate": self.optimizer.get_lr()}, epoch)
             # Save checkpoints
             checkpoint_file_path = self._save_checkpoint(epoch)
             self._update_metadata_checkpoint({
@@ -60,6 +61,8 @@ class TrainerBase:
                 "result": result,
                 "file_path": checkpoint_file_path
             })
+
+            self.scheduler.step(result_eval['loss'], epoch)
 
     @staticmethod
     def _prepare_device(n_gpu_use):
@@ -121,6 +124,7 @@ class TrainerBase:
             "state_dict": self.model.state_dict(),
             "trainer_config": self.trainer_config,
             "model_config": self.model_config,
+            'optimizer': self.optimizer.state_dict(),
         }
         file_name = os.path.join(self.checkpoint_dir,
                                  'epoch_{}.pth'.format(epoch))
@@ -135,6 +139,7 @@ class TrainerBase:
         checkpoint = torch.load(resume_path)
         self.start_epoch = checkpoint['epoch'] + 1
         self.model.load_state_dict(checkpoint['state_dict'], strict=True)
+        self.optimizer.load_state_dict(checkpoint['optimizer'])
         print("Checkpoint loaded. Resume training from epoch {}"
               .format(self.start_epoch))
 
