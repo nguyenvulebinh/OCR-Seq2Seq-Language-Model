@@ -4,9 +4,10 @@ from torch.utils.data import DataLoader
 from torchvision import transforms
 import os
 import json
+from utils import text_utils
 
 
-def get_dataloader(root_data_path, image_width, image_height, vocab, batch_size=4, num_workers=4, shuffle=True):
+def get_dataloader(root_data_path, image_width, image_height, vocab, batch_size=4, num_workers=4, keep_tone=True, shuffle=True):
     """
     create dataset and dataloader for create batch
     :param root_data_path:
@@ -27,7 +28,8 @@ def get_dataloader(root_data_path, image_width, image_height, vocab, batch_size=
 
     ocr_dataset = OCRDataset(root=root_data_path,
                              transform=data_transform,
-                             vocab=vocab)
+                             vocab=vocab,
+                             keep_tone=keep_tone)
 
     dataset_loader = DataLoader(ocr_dataset,
                                 batch_size=batch_size, shuffle=shuffle,
@@ -36,7 +38,7 @@ def get_dataloader(root_data_path, image_width, image_height, vocab, batch_size=
     return dataset_loader
 
 
-def get_or_create_vocab(root_data_path, labels_file='labels.json', vocab_file=None):
+def get_or_create_vocab(root_data_path, labels_file='labels.json', keep_tone=True, vocab_file=None):
     if vocab_file and os.path.isfile(vocab_file):
         with open(vocab_file, 'r', encoding='utf-8') as file:
             vocab_data = json.loads(file.read())
@@ -46,9 +48,14 @@ def get_or_create_vocab(root_data_path, labels_file='labels.json', vocab_file=No
             labels_data = json.loads(file.read())
         vocab = Vocabulary()
 
-        for label in labels_data.values():
-            for char in label:
-                vocab.add_token(char)
+        if keep_tone:
+            for label in labels_data.values():
+                for char in label:
+                    vocab.add_token(char)
+        else:
+            for label in labels_data.values():
+                for char in text_utils.remove_tone_line(label):
+                    vocab.add_token(char)
 
         with open(vocab_file, 'w', encoding='utf-8') as file:
             json.dump(vocab.to_serializable(), file)

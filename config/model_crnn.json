@@ -4,5 +4,6 @@
   "image_width": 1280,
   "image_height": 60,
   "image_channel": 3,
-  "rnn_hidden_size": 512
+  "rnn_hidden_size": 512,
+  "keep_tone": false
 }

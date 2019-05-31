@@ -4,6 +4,7 @@ from PIL import Image
 import json
 import torch
 import os
+from utils import text_utils
 
 
 class ResizeWithPad(object):
@@ -62,7 +63,7 @@ class OCRDataset(datasets.VisionDataset):
     """
 
     def __init__(self, root, transform=None, target_transform=None, is_valid_file=None,
-                 labels_file='labels.json', vocab=None, max_length=None):
+                 labels_file='labels.json', vocab=None, max_length=None, keep_tone=True):
         super(OCRDataset, self).__init__(root)
         self.transform = transform
         self.target_transform = target_transform
@@ -78,6 +79,7 @@ class OCRDataset(datasets.VisionDataset):
         self.samples = samples
         self.targets = [s[1] for s in samples]
         self.max_label_length = max_length
+        self.keep_tone = keep_tone
         try:
             with open(os.path.join(root, labels_file), 'r', encoding='utf-8') as file:
                 self.labels = json.loads(file.read())
@@ -123,7 +125,11 @@ class OCRDataset(datasets.VisionDataset):
             sample = self.transform(sample)
         file_name = path[path.rindex(os.path.sep) + 1:]
 
-        target = self.labels.get(file_name)
+        if self.keep_tone:
+            target = self.labels.get(file_name)
+        else:
+            target = text_utils.remove_tone_line(self.labels.get(file_name))
+
         target_vector = self.vocab.sentence_to_ids(target, self.max_label_length)
 
         return {

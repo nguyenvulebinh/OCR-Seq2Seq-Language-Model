@@ -17,6 +17,7 @@ class CRNNTrainer(TrainerBase):
         self.data_config = data_config
 
         self.vocab = ocr_loader.get_or_create_vocab(data_config['train']['root_data_path'],
+                                                    keep_tone=model_config["keep_tone"],
                                                     vocab_file=model_config.get('vocab_file'))
         # Define model
         self.model = CRNN(model_config.get('image_width'),
@@ -36,11 +37,13 @@ class CRNNTrainer(TrainerBase):
                                                            model_config.get('image_width'),
                                                            model_config.get('image_height'),
                                                            self.vocab,
+                                                           keep_tone=model_config["keep_tone"],
                                                            batch_size=trainer_config['batch_size'])
         self.valid_data_loader = ocr_loader.get_dataloader(data_config['valid']['root_data_path'],
                                                            model_config.get('image_width'),
                                                            model_config.get('image_height'),
                                                            self.vocab,
+                                                           keep_tone=model_config["keep_tone"],
                                                            batch_size=trainer_config['batch_size'])
 
         if checkpoint_name is not None:

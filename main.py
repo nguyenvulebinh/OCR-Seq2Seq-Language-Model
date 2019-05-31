@@ -8,7 +8,6 @@ import json
 import torch.nn.functional as F
 from trainer.crnn_trainer import CRNNTrainer
 
-
 # vocab = ocr_loader.get_or_create_vocab('./data-bin/raw/0916_Data Samples 2', vocab_file='vocab.json')
 # for batch in ocr_loader.get_dataloader('./data-bin/raw/0916_Data Samples 2', vocab):
 #     print(batch)
@@ -42,7 +41,7 @@ from trainer.crnn_trainer import CRNNTrainer
 #                         [10000, 0.0, 0.0, 0.0]],
 #
 #                        [[0.0, 10000, 0.0, 0.0],
-#                         [10000, 0.0, 0.0, 0.0],
+#                         [0.0, 0.0, 10000, 0.0],
 #                         [0.0, 0.0, 10000, 0.0]]]).log_softmax(2)
 # print(output)
 # # 012
@@ -50,7 +49,7 @@ from trainer.crnn_trainer import CRNNTrainer
 #
 # labels = torch.tensor([[1, 2, 3],
 #                        [1, 2, 3]])
-# input_lengths = torch.tensor([3,3], dtype=torch.long)
+# input_lengths = torch.tensor([3, 3], dtype=torch.long)
 # output_lengths = torch.tensor([2, 2], dtype=torch.long)
 # print(labels)
 # # print(output_lengths)
@@ -61,6 +60,7 @@ from trainer.crnn_trainer import CRNNTrainer
 #                   input_lengths,
 #                   output_lengths,
 #                   blank=0)
+#
 # print(loss)
 
 # log_probs = torch.randn(50, 16, 20).log_softmax(2)
