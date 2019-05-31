@@ -13,7 +13,7 @@ class VGG(nn.Module):
 
         # Freeze training for all layers
         for param in vgg16.features.parameters():
-            param.require_grad = False
+            param.requires_grad = False
 
         self.cnn = vgg16.features
 

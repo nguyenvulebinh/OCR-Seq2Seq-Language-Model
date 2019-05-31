@@ -11,8 +11,8 @@ def acc_pair_string(str_1, str_2, is_word_level=True):
 
 
 def accuracy_calculate(output, ground_truth, vocab, is_word_level=True):
-    output_indices = torch.argmax(output, dim=-1).numpy()
-    ground_truth_indices = ground_truth.numpy()
+    output_indices = torch.argmax(output, dim=-1).cpu().numpy()
+    ground_truth_indices = ground_truth.cpu().numpy()
 
     output_texts = [vocab.ids_to_sentence(item) for item in output_indices]
     ground_truth_texts = [vocab.ids_to_sentence(item) for item in ground_truth_indices]

@@ -47,8 +47,8 @@ class CRNNTrainer(TrainerBase):
             self._resume_checkpoint(checkpoint_name)
 
     def show_sample(self, output, ground_truth, num_sample=3):
-        output_indices = torch.argmax(output, dim=-1).numpy()
-        ground_truth_indices = ground_truth.numpy()
+        output_indices = torch.argmax(output, dim=-1).cpu().numpy()
+        ground_truth_indices = ground_truth.cpu().numpy()
         list_index_show = random.sample(range(len(ground_truth)), min(num_sample, len(ground_truth)))
         print("\nShow sample:")
         for idx, index in enumerate(list_index_show):

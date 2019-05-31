@@ -129,5 +129,6 @@ class OCRDataset(datasets.VisionDataset):
         return {
             "images": sample,
             "labels": target_vector,
-            "labels_lengths": len(target)
+            "labels_lengths": self.max_label_length
+            # "labels_lengths": len(target)
         }
