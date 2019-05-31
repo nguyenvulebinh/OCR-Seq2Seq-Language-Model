@@ -43,7 +43,8 @@ class TrainerBase:
             result_train = self._train(epoch)
             end_time = time.time()
             print("Epoch train in {:.2f}s\n\n".format(end_time - start_time))
-            result_eval = self._eval(epoch)
+            with torch.no_grad():
+                result_eval = self._eval(epoch)
             result = {**result_train, **result_eval}
             # Log metrics
             if (self.train_logger is not None) or \
