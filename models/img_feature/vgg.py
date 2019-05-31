@@ -15,7 +15,7 @@ class VGG(nn.Module):
         for param in vgg16.features.parameters():
             param.requires_grad = False
 
-        self.cnn = vgg16.features
+        self.cnn = vgg16.features[:-1]
 
     def forward(self, image):
         features = self.cnn(image)

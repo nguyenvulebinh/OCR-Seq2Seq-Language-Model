@@ -53,7 +53,11 @@ class TrainerBase:
                         logging(self.train_logger, value, epoch)
                     elif key == "valid_metrics":
                         logging(self.valid_logger, value, epoch)
-            logging(self.train_logger, {"learning_rate": self.optimizer.get_lr()}, epoch)
+
+            # get learning rate
+            for param_group in self.optimizer.param_groups:
+                logging(self.train_logger, {"learning_rate": param_group['lr']}, epoch)
+
             # Save checkpoints
             checkpoint_file_path = self._save_checkpoint(epoch)
             self._update_metadata_checkpoint({
@@ -62,7 +66,7 @@ class TrainerBase:
                 "file_path": checkpoint_file_path
             })
 
-            self.scheduler.step(result_eval['loss'], epoch)
+            self.scheduler.step(result_eval['valid_metrics']['loss'], epoch)
 
     @staticmethod
     def _prepare_device(n_gpu_use):
