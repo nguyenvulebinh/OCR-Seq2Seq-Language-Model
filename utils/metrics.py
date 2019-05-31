@@ -7,7 +7,7 @@ def acc_pair_string(str_1, str_2, is_word_level=True):
         str_1 = str_1.split()
         str_2 = str_2.split()
 
-    return 1. - editdistance.distance(str_1, str_2) / max(len(str_1), len(str_2))
+    return (1. - editdistance.distance(str_1, str_2) / max(len(str_1), len(str_2))) * 100
 
 
 def accuracy_calculate(output, ground_truth, vocab, is_word_level=True):

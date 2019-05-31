@@ -12,7 +12,7 @@ class VGG(nn.Module):
         vgg16 = models.vgg16_bn(pretrained=True)
 
         # Freeze training for all layers
-        for param in vgg16.features.parameters():
+        for param in vgg16.features[:30].parameters():
             param.requires_grad = False
 
         self.cnn = vgg16.features[:-1]
