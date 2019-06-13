@@ -110,7 +110,7 @@ class OCRDataset(datasets.VisionDataset):
         return images
 
     def __len__(self):
-        # return 4
+        # return 10
         return len(self.samples)
 
     def __getitem__(self, index):
