@@ -8,14 +8,14 @@ class CRNN(nn.Module):
     Model using cnn to extract feature and rnn to generate text characters
     """
 
-    def __init__(self, image_width, image_height, image_channel, hidden_size, vocab_size, drop=0.3):
+    def __init__(self, image_width, image_height, image_channel, hidden_size, vocab_size, num_layers=2, drop=0.3):
         super(CRNN, self).__init__()
         self.vgg = VGG()
         input_size = self.vgg(torch.rand(1, image_channel, image_width, image_height)).size(-1)
         # input_size, hidden_size, num_layers
         self.rnn = nn.LSTM(input_size=input_size,
                            hidden_size=hidden_size,
-                           num_layers=2,
+                           num_layers=num_layers,
                            bidirectional=True,
                            batch_first=True,
                            dropout=drop)

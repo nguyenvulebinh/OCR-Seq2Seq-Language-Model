@@ -7,11 +7,17 @@ from trainer import crnn_trainer
 import json
 import torch.nn.functional as F
 from trainer.crnn_trainer import CRNNTrainer
+from trainer.gru_encoder_decoder_trainer import GRUEnDeTrainer
+
+import torchvision
+
 
 # vocab = ocr_loader.get_or_create_vocab('./data-bin/raw/0916_Data Samples 2', vocab_file='vocab.json')
-# for batch in ocr_loader.get_dataloader('./data-bin/raw/0916_Data Samples 2', vocab):
+# for batch in ocr_loader.get_dataloader('./data-bin/raw/0916_Data Samples 2', 1280, 60, vocab):
 #     print(batch)
 #     print(batch.get('labels_lengths').shape)
+#     # for idx, image in enumerate(batch.get('images')):
+#     #     torchvision.utils.save_image(image, "{}.png".format(idx))
 #     # print(batch[1])
 #     # for label_indices in batch[1]:
 #     #     print(vocab.ids_to_sentence(label_indices.numpy()))
@@ -77,9 +83,22 @@ def read_file_config(file_path):
     return json.loads(content)
 
 
-data_config = read_file_config('./config/data.json')
-model_config = read_file_config('./config/model_crnn.json')
-trainer_config = read_file_config('./config/trainer.json')
+def train_crnn():
+    data_config = read_file_config('./config/data.json')
+    model_config = read_file_config('./config/model_crnn.json')
+    trainer_config = read_file_config('./config/trainer.json')
 
-trainer = CRNNTrainer(trainer_config, model_config, data_config)
-trainer.train()
+    trainer = CRNNTrainer(trainer_config, model_config, data_config)
+    trainer.train()
+
+
+def train_gru_encoder_decoder():
+    data_config = read_file_config('./config/data.json')
+    model_config = read_file_config('./config/model_gru_en_de.json')
+    trainer_config = read_file_config('./config/trainer.json')
+
+    trainer = GRUEnDeTrainer(trainer_config, model_config, data_config)
+    trainer.train()
+
+
+train_gru_encoder_decoder()

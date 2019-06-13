@@ -88,6 +88,8 @@ class OCRDataset(datasets.VisionDataset):
                 for label in self.labels.values():
                     if len(label) > self.max_label_length:
                         self.max_label_length = len(label)
+                # Add some space for  special character (pad, sos, eos,...)
+                self.max_label_length += 3
         except:
             self.labels = None
 
@@ -130,11 +132,13 @@ class OCRDataset(datasets.VisionDataset):
         else:
             target = text_utils.remove_tone_line(self.labels.get(file_name))
 
-        target_vector = self.vocab.sentence_to_ids(target, self.max_label_length)
+        # target_vector = self.vocab.sentence_to_ids(target, self.max_label_length)
+        # input_teach_force =
 
         return {
             "images": sample,
-            "labels": target_vector,
+            "labels": self.vocab.sentence_to_label(target, self.max_label_length),
+            "teach_force_labels": self.vocab.sentence_to_teach_force_label(target, self.max_label_length),
             "labels_lengths": self.max_label_length
             # "labels_lengths": len(target)
         }

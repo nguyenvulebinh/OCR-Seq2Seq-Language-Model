@@ -11,7 +11,7 @@ class Vocabulary(object):
         :param token_to_idx:  a pre-existing map of tokens to indices
         """
         if token_to_idx is None:
-            token_to_idx = {'<blank>': 0, '<pad>': 1}
+            token_to_idx = {'<blank>': 0, '<pad>': 1, '<sos>': 2, '<eos>': 3}
 
         self._token_to_idx = token_to_idx
 
@@ -39,6 +39,20 @@ class Vocabulary(object):
         :return:
         """
         return self.lookup_token('<pad>')
+
+    def get_sos_id(self):
+        """
+        Get start of sentence id (sos id)
+        :return:
+        """
+        return self.lookup_token('<sos>')
+
+    def get_eos_id(self):
+        """
+        Get end of sentence id (eos id)
+        :return:
+        """
+        return self.lookup_token('<eos>')
 
     @classmethod
     def from_serializable(cls, contents):
@@ -87,18 +101,47 @@ class Vocabulary(object):
             raise KeyError("The index {} is not in the Vocabulary".format(index))
         return self._idx_to_token[index]
 
-    def sentence_to_ids(self, sentence, length):
+    def sentence_to_ids(self, sentence):
         """
         convert sentence to list char ids
         :param sentence:
         :param length:
         :return:
         """
-        vector = np.zeros(length, dtype=np.int64)
+        # vector = np.zeros(length, dtype=np.int64)
         indices = [self.lookup_token(char) for char in sentence]
 
+        # vector[:len(indices)] = indices
+        # vector[len(indices):] = self.get_pad_id()
+        return indices
+
+    def sentence_to_label(self, sentence, length):
+        """
+        convert sentence to label indices id1, id2,... eos, pad, pad
+        :param sentence:
+        :param length:
+        :return:
+        """
+        vector = np.zeros(length, dtype=np.int64)
+        indices = self.sentence_to_ids(sentence)
+
         vector[:len(indices)] = indices
-        vector[len(indices):] = self.get_pad_id()
+        vector[len(indices)] = self.get_eos_id()
+        vector[len(indices) + 1:] = self.get_pad_id()
+        return vector
+
+    def sentence_to_teach_force_label(self, sentence, length):
+        """
+        convert sentence to teach force label indices sos, id1, id2,... pad, pad
+        :param sentence:
+        :param length:
+        :return:
+        """
+        vector = np.zeros(length, dtype=np.int64)
+        indices = self.sentence_to_ids(sentence)
+        vector[0] = self.get_sos_id()
+        vector[1:len(indices) + 1] = indices
+        vector[len(indices) + 1:] = self.get_pad_id()
         return vector
 
     def ids_to_sentence(self, indices):

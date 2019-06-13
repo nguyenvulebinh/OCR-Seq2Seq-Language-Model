@@ -7,7 +7,7 @@ import json
 from utils import text_utils
 
 
-def get_dataloader(root_data_path, image_width, image_height, vocab, batch_size=4, num_workers=4, keep_tone=True, shuffle=True):
+def get_dataloader(root_data_path, image_width, image_height, vocab, batch_size=4, num_workers=4, keep_tone=True, shuffle=True, max_target_len=None):
     """
     create dataset and dataloader for create batch
     :param root_data_path:
@@ -29,7 +29,8 @@ def get_dataloader(root_data_path, image_width, image_height, vocab, batch_size=
     ocr_dataset = OCRDataset(root=root_data_path,
                              transform=data_transform,
                              vocab=vocab,
-                             keep_tone=keep_tone)
+                             keep_tone=keep_tone,
+                             max_length=max_target_len)
 
     dataset_loader = DataLoader(ocr_dataset,
                                 batch_size=batch_size, shuffle=shuffle,

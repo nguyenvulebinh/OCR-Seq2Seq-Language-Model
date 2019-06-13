@@ -1,10 +1,20 @@
 {
   "train": {
-    "root_data_path": "/home/nguyenbinh/Workspace/python/ocr/data/extracted_data/data_large/",
+    "root_data_path": "./data-bin/raw/1015_Private Test/",
     "labels_file": "labels.json"
   },
   "valid": {
-    "root_data_path": "/home/nguyenbinh/Workspace/python/ocr/data/extracted_data/1015_Private Test/",
+    "root_data_path": "./data-bin/raw/1015_Private Test/",
     "labels_file": "labels.json"
+  },
+  "real": {
+    "train": {
+      "root_data_path": "/home/nguyenbinh/Workspace/python/ocr/data/extracted_data/data_large/",
+      "labels_file": "labels.json"
+    },
+    "valid": {
+      "root_data_path": "/home/nguyenbinh/Workspace/python/ocr/data/extracted_data/1015_Private Test/",
+      "labels_file": "labels.json"
+    }
   }
 }
