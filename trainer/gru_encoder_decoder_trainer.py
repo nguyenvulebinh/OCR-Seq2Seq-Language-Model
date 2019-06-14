@@ -86,11 +86,14 @@ class GRUEnDeTrainer(TrainerBase):
             self.optimizer.zero_grad()
 
             # Determine if we are using teacher forcing this iteration
-            use_teacher_forcing = True if random.random() < self.trainer_config['teacher_forcing_ratio'] else False
-            if use_teacher_forcing:
-                output = self.model(images, teach_force_labels)
-            else:
-                output = self.model(images)
+            output = self.model(images,
+                                teach_force_labels,
+                                teacher_forcing_ratio=self.trainer_config['teacher_forcing_ratio'])
+            # use_teacher_forcing = True if random.random() < self.trainer_config['teacher_forcing_ratio'] else False
+            # if use_teacher_forcing:
+            #     output = self.model(images, teach_force_labels)
+            # else:
+            #     output = self.model(images)
             loss = metrics.sequence_loss(output, labels, self.vocab.get_pad_id())
 
             loss.backward()

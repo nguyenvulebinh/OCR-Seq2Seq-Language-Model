@@ -6,5 +6,5 @@
   "max_models_keep": 5,
   "logs_train": "models-bin/gru_en_de/logs/train",
   "logs_valid": "models-bin/gru_en_de/logs/valid",
-  "teacher_forcing_ratio": 0.8
+  "teacher_forcing_ratio": 0.7
 }

@@ -153,6 +153,8 @@ class Vocabulary(object):
         sentence = []
         current_index = -1
         for index in indices:
+            if index == self.get_eos_id():
+                break
             if index == self.get_pad_id():
                 continue
             if index != current_index:

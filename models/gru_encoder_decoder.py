@@ -3,6 +3,7 @@ import torch.nn as nn
 from .img_feature.vgg import VGG
 from models.img_feature.gru_encoder import GRUEncoder
 from models.conditon_lm.gru_attn_decoder import GRUAttnDecoder
+import random
 # for unittest
 import unittest
 from data_loader.lm.vocabulary import Vocabulary
@@ -28,7 +29,7 @@ class GRUEncodeDecode(nn.Module):
                                       num_layers=num_layers, dropout=drop)
         self.dropout = nn.Dropout(p=drop)
 
-    def forward(self, image, target_teach_force=None):
+    def forward(self, image, target_teach_force=None, teacher_forcing_ratio=0.5):
         batch_size = image.size(0)
         # get image features
         image_features = self.dropout(self.vgg(image))
@@ -41,10 +42,19 @@ class GRUEncodeDecode(nn.Module):
             # using teach force
             # (batch, indices) -> (indices, batch) for loop
             input_indices = target_teach_force.transpose(1, 0)
+            input_step = input_indices[0].view(1, -1)
             for index in range(self.max_target_len):
-                input_step = input_indices[index].view(1, -1)
                 output_step, decoder_hidden = self.decoder(input_step, decoder_hidden, encoder_outputs)
                 decoder_outputs.append(output_step)
+
+                use_teacher_forcing = True if random.random() < teacher_forcing_ratio else False
+                if use_teacher_forcing:
+                    input_step = input_indices[index].view(1, -1)
+                else:
+                    # No teacher forcing: next input is decoder's own current output
+                    _, topi = output_step.topk(1)
+                    input_step = torch.tensor([[topi[i][0] for i in range(batch_size)]], dtype=torch.int64).to(self.device)
+
         else:
             # normal infer
             input_step = (torch.ones((1, batch_size)) * self.vocab.get_sos_id()).long().to(self.device)
