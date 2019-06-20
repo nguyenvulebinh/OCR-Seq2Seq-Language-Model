@@ -7,3 +7,4 @@ tensorflow
 numpy
 tqdm
 editdistance
+opencv-python

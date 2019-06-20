@@ -5,6 +5,7 @@ import json
 import torch
 import os
 from utils import text_utils
+from torchvision import transforms
 
 
 class ResizeWithPad(object):
@@ -139,6 +140,6 @@ class OCRDataset(datasets.VisionDataset):
             "images": sample,
             "labels": self.vocab.sentence_to_label(target, self.max_label_length),
             "teach_force_labels": self.vocab.sentence_to_teach_force_label(target, self.max_label_length),
-            "labels_lengths": self.max_label_length
-            # "labels_lengths": len(target)
+            # "labels_lengths": self.max_label_length
+            "labels_lengths": len(target)
         }

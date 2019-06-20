@@ -20,13 +20,15 @@ class CRNN(nn.Module):
                            batch_first=True,
                            dropout=drop)
         self.dropout = nn.Dropout(p=drop)
-        self.fc = nn.Linear(hidden_size * 2, vocab_size)
+        self.fc_1 = nn.Linear(hidden_size * 2, hidden_size * 2)
+        self.fc_2 = nn.Linear(hidden_size * 2, vocab_size)
 
     def forward(self, image):
         feature = self.dropout(self.vgg(image))
         output, final_hidden = self.rnn(feature)
         batch_size, seq_length, feature_size = output.size()
         output = output.contiguous().view(batch_size * seq_length, feature_size)
-        output = self.fc(output)
+        output = self.dropout(self.fc_1(output))
+        output = self.fc_2(output)
         output = output.view(batch_size, seq_length, -1).log_softmax(2)
         return output

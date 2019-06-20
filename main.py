@@ -101,4 +101,4 @@ def train_gru_encoder_decoder():
     trainer.train()
 
 
-train_gru_encoder_decoder()
+train_crnn()
