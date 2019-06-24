@@ -2,6 +2,7 @@ import torch
 from models.crnn import CRNN
 from data_loader import ocr_loader
 import os
+from utils.ctc_beam_search import CTCBeamSearch
 
 
 def load_crnn_model(model_path):
@@ -30,16 +31,21 @@ if __name__ == '__main__':
                                                     model_config.get('image_height'),
                                                     # data_path='/Users/nguyenbinh/Programing/Python/OCR-Seq2Seq-'
                                                     #           'Language-Model/data-bin/raw/processed/valid',
-                                                    #
+
                                                     data_path='/Users/nguyenbinh/Programing/Python/OCR-Seq2Seq-'
                                                               'Language-Model/data-bin/raw/1015_Private Test',
 
-
                                                     batch_size=4)
     for img_names, img_tensors in infer_iterator_data:
-        crnn_outputs = model_crnn(img_tensors)
-        output_indices = torch.argmax(crnn_outputs, dim=-1).cpu().numpy()
+        crnn_outputs = model_crnn(img_tensors, softmax=True)
+        ctc_beam_decoder = CTCBeamSearch(vocab)
+        output_indices_beam = ctc_beam_decoder.decode(crnn_outputs.detach().numpy())
+        output_indices_greedy = torch.argmax(crnn_outputs, dim=-1).cpu().numpy()
         for i in range(len(img_names)):
-            label = vocab.ids_to_sentence(output_indices[i])
-            print(img_names[i][img_names[i].rindex(os.path.sep) + 1:], label)
+            label_greedy = vocab.ids_to_sentence(output_indices_greedy[i])
+            label_beam = vocab.ids_to_sentence(output_indices_beam[i])
+            print("{}:\nBeam result: \t{}\nGreedy result: \t{}".format(img_names[i][img_names[i].rindex(os.path.sep) + 1:],
+                                                                   label_beam,
+                                                                   label_greedy))
+            # print(img_names[i][img_names[i].rindex(os.path.sep) + 1:], label)
         break

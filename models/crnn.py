@@ -23,12 +23,15 @@ class CRNN(nn.Module):
         self.fc_1 = nn.Linear(hidden_size * 2, hidden_size * 2)
         self.fc_2 = nn.Linear(hidden_size * 2, vocab_size)
 
-    def forward(self, image):
+    def forward(self, image, softmax=False):
         feature = self.dropout(self.vgg(image))
         output, final_hidden = self.rnn(feature)
         batch_size, seq_length, feature_size = output.size()
         output = output.contiguous().view(batch_size * seq_length, feature_size)
         output = self.dropout(self.fc_1(output))
         output = self.fc_2(output)
-        output = output.view(batch_size, seq_length, -1).log_softmax(2)
+        if softmax:
+            output = output.view(batch_size, seq_length, -1).softmax(2)
+        else:
+            output = output.view(batch_size, seq_length, -1).log_softmax(2)
         return output
