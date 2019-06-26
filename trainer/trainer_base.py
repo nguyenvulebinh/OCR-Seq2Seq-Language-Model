@@ -4,6 +4,7 @@ import datetime
 import time
 import os
 from .logger import Logger
+from data_loader import ocr_loader
 
 
 def logging(train_logger, result, step):
@@ -12,7 +13,7 @@ def logging(train_logger, result, step):
 
 
 class TrainerBase:
-    def __init__(self, trainer_config, model_config):
+    def __init__(self, trainer_config, model_config, data_config):
         # Setup directory for checkpoint saving
         self.start_time = datetime.datetime.now().strftime('%m%d_%H%M%S')
         self.checkpoint_dir = os.path.join(model_config['checkpoint'])
@@ -27,6 +28,9 @@ class TrainerBase:
         self.epochs = trainer_config['epochs']
         self.start_epoch = 1
         self.metadata_checkpoint = self._load_metadata_checkpoint(model_config['metadata_checkpoint'])
+        self.vocab = ocr_loader.get_or_create_vocab(data_config['train']['root_data_path'],
+                                                    keep_tone=model_config["keep_tone"],
+                                                    vocab_file=model_config.get('vocab_file'))
 
     def _config_model_and_optimizer(self, model, optimizer):
         self.model = model.to(self.device)
@@ -130,6 +134,7 @@ class TrainerBase:
             "trainer_config": self.trainer_config,
             "model_config": self.model_config,
             'optimizer': self.optimizer.state_dict(),
+            'vocab': self.vocab.to_serializable()
         }
         file_name = os.path.join(self.checkpoint_dir,
                                  'epoch_{}.pth'.format(epoch))

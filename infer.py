@@ -3,25 +3,27 @@ from models.crnn import CRNN
 from data_loader import ocr_loader
 import os
 from utils.ctc_beam_search import CTCBeamSearch
-
+from data_loader.lm.vocabulary import Vocabulary
 
 def load_crnn_model(model_path):
     model_info = torch.load(model_path, map_location='cpu')
     model_config = model_info.get('model_config')
-    vocab = ocr_loader.get_or_create_vocab(vocab_file=model_config.get('vocab_file'))
+    vocab = Vocabulary.from_serializable(model_info.get('vocab'))
+    # vocab = ocr_loader.get_or_create_vocab(vocab_file=model_config.get('vocab_file'))
     # Define model
     model = CRNN(model_config.get('image_width'),
                  model_config.get('image_height'),
                  model_config.get('image_channel'),
                  model_config.get('rnn_hidden_size'),
-                 len(vocab))
+                 len(vocab),
+                 use_vis_attn=model_config.get('use_vis_attn'))
     model.load_state_dict(model_info['state_dict'], strict=True)
     return model, vocab, model_config
 
 
 if __name__ == '__main__':
     model_crnn, vocab, model_config = load_crnn_model('/Users/nguyenbinh/Programing/Python/OCR-Seq2Seq-Language-Model/'
-                                                      'models-bin/crnn/checkpoints/epoch_50.pth')
+                                                      'models-bin/crnn/checkpoints/epoch_1.pth')
 
     image_path = '/Users/nguyenbinh/Programing/Python/OCR-Seq2Seq-Language-Model/' \
                  'data-bin/raw/processed/valid/large_data_test_667.jpg'

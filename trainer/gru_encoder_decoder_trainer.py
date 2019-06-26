@@ -10,14 +10,11 @@ from utils import metrics
 class GRUEnDeTrainer(TrainerBase):
 
     def __init__(self, trainer_config, model_config, data_config, checkpoint_name=None):
-        super(GRUEnDeTrainer, self).__init__(trainer_config, model_config)
+        super(GRUEnDeTrainer, self).__init__(trainer_config, model_config, data_config)
         self.model_config = model_config
         self.trainer_config = trainer_config
         self.data_config = data_config
 
-        self.vocab = ocr_loader.get_or_create_vocab(data_config['train']['root_data_path'],
-                                                    keep_tone=model_config["keep_tone"],
-                                                    vocab_file=model_config.get('vocab_file'))
         # Define model
         self.model = GRUEncodeDecode(image_width=model_config.get('image_width'),
                                      image_height=model_config.get('image_height'),

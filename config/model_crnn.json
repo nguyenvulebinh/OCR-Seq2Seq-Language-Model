@@ -6,5 +6,6 @@
   "image_height": 60,
   "image_channel": 3,
   "rnn_hidden_size": 512,
-  "keep_tone": false
+  "keep_tone": false,
+  "use_vis_attn": true
 }
