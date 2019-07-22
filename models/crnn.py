@@ -50,7 +50,11 @@ class CRNN(nn.Module):
         super(CRNN, self).__init__()
         self.vgg = VGG()
         _, time_steps, input_size = self.vgg(torch.rand(1, image_channel, image_width, image_height)).size()
+        self.liner = nn.Linear(input_size, 512)
+        input_size = 512
         # input_size, hidden_size, num_layers
+        if use_vis_attn:
+            self.attn = VisualAttn(time_steps=time_steps)
         self.rnn = nn.LSTM(input_size=input_size,
                            hidden_size=hidden_size,
                            num_layers=num_layers,
@@ -58,14 +62,13 @@ class CRNN(nn.Module):
                            batch_first=True,
                            dropout=drop)
         self.use_vis_attn = use_vis_attn
-        if use_vis_attn:
-            self.attn = VisualAttn(time_steps=time_steps)
         self.dropout = nn.Dropout(p=drop)
         self.fc_1 = nn.Linear(hidden_size * 2, hidden_size * 2)
         self.fc_2 = nn.Linear(hidden_size * 2, vocab_size)
 
     def forward(self, image, softmax=False):
         feature = self.dropout(self.vgg(image))
+        feature = self.dropout(torch.relu(self.liner(feature)))
         if self.use_vis_attn:
             feature = self.attn(feature)
         output, final_hidden = self.rnn(feature)
