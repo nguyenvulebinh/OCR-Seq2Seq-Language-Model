@@ -11,6 +11,7 @@ class CTCLossCriterion(FairseqCriterion):
         super(FairseqCriterion, self).__init__()
         self.args = args
         self.blank_idx = task.target_dictionary.blank()
+        self.padding_idx = task.target_dictionary.pad()
 
     def forward(self, model, sample, reduction='mean'):
         """Compute the loss for the given sample.
@@ -21,7 +22,10 @@ class CTCLossCriterion(FairseqCriterion):
         3) logging outputs to display while training
         """
         net_output = model(**sample['net_input'])
-        loss = self.compute_loss(model, net_output, sample, reduction=reduction)
+        net_output_middle = net_output['encoder_output']
+        net_output_final, _ = net_output['decoder_output']
+        loss = self.compute_loss_ctc(model, net_output_middle, sample, reduction=reduction) + \
+               self.compute_cross_entropy_loss(model, net_output_final, sample)
         sample_size = sample['nsentences'] if self.args.sentence_avg else sample['ntokens']
         logging_output = {
             'loss': loss.item(),
@@ -31,9 +35,21 @@ class CTCLossCriterion(FairseqCriterion):
         }
         return loss, sample_size, logging_output
 
-    def compute_loss(
-        self, model, net_output, sample,
-        reduction='mean', zero_infinity=False,
+    def compute_cross_entropy_loss(self, model, net_output, sample, reduce=True):
+        lprobs = model.get_normalized_probs(net_output, log_probs=True)
+        lprobs = lprobs.view(-1, lprobs.size(-1))
+        target = sample['target'].view(-1)
+        loss = F.nll_loss(
+            lprobs,
+            target,
+            ignore_index=self.padding_idx,
+            reduction='mean' if reduce else 'none',
+        )
+        return loss
+
+    def compute_loss_ctc(
+            self, model, net_output, sample,
+            reduction='mean', zero_infinity=False,
     ):
         log_probs = model.get_normalized_probs(net_output, log_probs=True)
         targets = torch.cat(sample['target_simply'])  # Expected targets to have CPU Backend

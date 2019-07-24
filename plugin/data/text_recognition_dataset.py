@@ -24,11 +24,8 @@ def collate(
     prev_output_tokens = None
 
     if use_ctc_loss:
-        targets = [s['target'] for s in samples]
         targets_simply = [s['target_simply'] for s in samples]
-    else:
         targets = merge('target', left_pad=left_pad)
-        targets_simply = merge('target_simply', left_pad=left_pad)
         if input_feeding:
             # we create a shifted version of targets for feeding the
             # previous output token(s) into the next decoder step
@@ -48,7 +45,7 @@ def collate(
         'nsentences': len(samples),
         'ntokens': ntokens,
         'net_input': {
-            'src_tokens': images,
+            'src_tokens': images
         },
         'target': targets,
         'target_simply': targets_simply,
@@ -100,11 +97,9 @@ class TextRecognitionDataset(FairseqDataset):
         # Append EOS to end of tgt sentence if it does not have an EOS
         if self.append_eos_to_target:
             tgt_item = tgt_item.to(torch.int64)
-            tgt_simply_item = tgt_simply_item.to(torch.int64)
             eos = self.tgt_dict.eos()
             if self.tgt and self.tgt[index][-1] != eos:
                 tgt_item = torch.cat([tgt_item, torch.LongTensor([eos])])
-                tgt_simply_item = torch.cat([tgt_simply_item, torch.LongTensor([eos])])
 
         return {
             'id': index,
@@ -116,8 +111,11 @@ class TextRecognitionDataset(FairseqDataset):
 
     def collater(self, samples):
         """Merge a list of samples to form a mini-batch."""
-        pad_idx = None if self.use_ctc_loss is True else self.tgt_dict.pad()
-        eos_idx = None if self.use_ctc_loss is True else self.tgt_dict.eos()
+        # pad_idx = None if self.use_ctc_loss is True else self.tgt_dict.pad()
+        # eos_idx = None if self.use_ctc_loss is True else self.tgt_dict.eos()
+
+        pad_idx = self.tgt_dict.pad()
+        eos_idx = self.tgt_dict.eos()
         left_pad = self.left_pad
         input_feeding = self.input_feeding
 

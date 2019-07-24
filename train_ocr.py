@@ -19,7 +19,7 @@ if __name__ == "__main__":
         '--height', '60',
         '--width', '1280',
 
-        '--max-epoch', '50',
+        '--max-epoch', '51',
         '--criterion', 'ctc_loss',
         # '--num-workers', '1',
 

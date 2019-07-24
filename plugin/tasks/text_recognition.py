@@ -126,12 +126,11 @@ class TextRecognitionTask(FairseqTask):
         print('| {} {} {} images'.format(self.args.data, split, len(image_names)))
 
         shuffle = True if split == 'train' else False
-        append_eos_to_target = False if self.args.criterion == 'ctc_loss' else True
         use_ctc_loss = True if self.args.criterion == 'ctc_loss' else False
         self.datasets[split] = TextRecognitionDataset(
             image_names, targets, targets_simply, self.tgt_dict, tgt_sizes=target_lengths,
             shuffle=shuffle, transform=self.transform, use_ctc_loss=use_ctc_loss,
-            input_feeding=True, append_eos_to_target=append_eos_to_target,
+            input_feeding=True, append_eos_to_target=True,
         )
 
     def build_generator(self, args):
