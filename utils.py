@@ -3,6 +3,8 @@ import sys
 import importlib
 import re
 import editdistance
+import json
+import glob
 
 SPACE_NORMALIZER = re.compile(r"\s+")
 
@@ -50,6 +52,25 @@ def import_user_module(module_path):
             sys.path.insert(0, module_parent)
             importlib.import_module(module_name)
             sys.path.pop(0)
+
+
+def load_raw_dataset(data_path):
+    labels = []
+    image_paths = []
+
+    if os.path.exists(os.path.join(data_path, 'labels.json')):
+        with open(os.path.join(data_path, 'labels.json'), 'r', encoding='utf-8') as file_label:
+            data = json.loads(file_label.read())
+        for img_name, label in data.items():
+            if os.path.exists(os.path.join(data_path, img_name)):
+                labels.append(label)
+                image_paths.append(os.path.join(data_path, img_name))
+    else:
+        labels = None
+        image_paths.extend(glob.glob(os.path.join(data_path, "*.jpg")))
+        image_paths.extend(glob.glob(os.path.join(data_path, "*.png")))
+
+    return labels, image_paths
 
 
 if __name__ == '__main__':

@@ -26,3 +26,26 @@ class CTCLossDictionary(Dictionary):
 
         sent = ' '.join(self[i] for i in tensor)
         return sent
+
+    def ctc_string(self, indices):
+        """
+        convert id character to sentence
+        :param indices:
+        :return:
+        """
+        sentence = []
+        current_index = -1
+        for index in indices:
+            if index == self.eos():
+                break
+            if index == self.blank():
+                continue
+            if index != current_index:
+                current_index = index
+                if index == self.blank():
+                    continue
+                else:
+                    sentence.append(index)
+            else:
+                continue
+        return sentence

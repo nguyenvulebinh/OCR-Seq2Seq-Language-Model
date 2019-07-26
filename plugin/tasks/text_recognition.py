@@ -134,29 +134,29 @@ class TextRecognitionTask(FairseqTask):
         )
 
     def build_generator(self, args):
-        if args.criterion == 'ctc_loss':
-            from plugin.ctc_loss_generator import CTCLossGenerator
-            return CTCLossGenerator(self.target_dictionary)
-        else:
-            from fairseq.sequence_generator import SequenceGenerator
-            return SequenceGenerator(
-                self.target_dictionary,
-                beam_size=args.beam,
-                max_len_a=args.max_len_a,
-                max_len_b=args.max_len_b,
-                min_len=args.min_len,
-                stop_early=(not args.no_early_stop),
-                normalize_scores=(not args.unnormalized),
-                len_penalty=args.lenpen,
-                unk_penalty=args.unkpen,
-                sampling=args.sampling,
-                sampling_topk=args.sampling_topk,
-                temperature=args.temperature,
-                diverse_beam_groups=args.diverse_beam_groups,
-                diverse_beam_strength=args.diverse_beam_strength,
-                match_source_len=args.match_source_len,
-                no_repeat_ngram_size=args.no_repeat_ngram_size,
-            )
+        # if args.criterion == 'ctc_loss':
+        #     from plugin.ctc_loss_generator import CTCLossGenerator
+        #     return CTCLossGenerator(self.target_dictionary)
+        # else:
+        from fairseq.sequence_generator import SequenceGenerator
+        return SequenceGenerator(
+            self.target_dictionary,
+            beam_size=args.beam,
+            max_len_a=args.max_len_a,
+            max_len_b=args.max_len_b,
+            min_len=args.min_len,
+            stop_early=(not args.no_early_stop),
+            normalize_scores=(not args.unnormalized),
+            len_penalty=args.lenpen,
+            unk_penalty=args.unkpen,
+            sampling=args.sampling,
+            sampling_topk=args.sampling_topk,
+            temperature=args.temperature,
+            diverse_beam_groups=args.diverse_beam_groups,
+            diverse_beam_strength=args.diverse_beam_strength,
+            match_source_len=args.match_source_len,
+            no_repeat_ngram_size=args.no_repeat_ngram_size,
+        )
 
     def max_positions(self):
         """Return the max input length allowed by the task."""
