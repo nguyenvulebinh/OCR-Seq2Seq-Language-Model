@@ -13,8 +13,8 @@ class ImageEncoder(FairseqEncoder):
 
     def __init__(self, args):
         super(FairseqEncoder, self).__init__()
-        self.features = ConvFeaturesGetter(args.backbone, args.pretrained)
-        _, self.time_steps, input_size = self.features(torch.rand(1, 3, args.width, args.height)).size()
+        self.features = ConvFeaturesGetter(args)
+        _, self.time_steps, input_size = self.features(torch.rand(1, 3, args.height, args.width)).size()
         self.liner = nn.Linear(input_size, args.decoder_embed_dim)
         self.dropout = nn.Dropout(p=args.dropout)
 

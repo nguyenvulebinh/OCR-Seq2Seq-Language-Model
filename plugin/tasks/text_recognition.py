@@ -89,7 +89,7 @@ class TextRecognitionTask(FairseqTask):
         Args:
             args (argparse.Namespace): parsed command-line arguments
         """
-        use_ctc_loss = True if args.criterion == 'ctc_loss' else False
+        use_ctc_loss = True if args.criterion == 'ctc_loss' or args.criterion == 'ocrseq_loss' else False
         tgt_dict = cls.load_dictionary(os.path.join(args.data, 'dict.txt'), use_ctc_loss)
         print('| target dictionary: {} types'.format(len(tgt_dict)))
 

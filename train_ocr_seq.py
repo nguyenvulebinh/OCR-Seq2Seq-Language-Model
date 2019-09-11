@@ -11,16 +11,17 @@ if __name__ == "__main__":
         './data-bin/ocr-dataset/',
         '--user-dir', './plugin',
         '--task', 'text_recognition',
-        '--arch', 'decoder_crnn',
+        '--arch', 'ocrseq',
         '--decoder-layers', '2',
-        '--backbone', 'vgg16_bn',
-        '--batch-size', '16',
+        # '--backbone', 'vgg16_bn',
+        '--backbone', 'cnn_baseline',
+        '--batch-size', '1',
 
-        '--height', '60',
+        '--height', '64',
         '--width', '1280',
 
         '--max-epoch', '51',
-        '--criterion', 'ctc_loss',
+        '--criterion', 'ocrseq_loss',
         # '--num-workers', '1',
 
         '--optimizer', 'adam',
@@ -36,7 +37,7 @@ if __name__ == "__main__":
         '--clip-norm', '0.0',
         # '--weight-decay', '0.0',
         '--save-interval', '1',
-        '--save-dir', 'checkpoints/crnn',
+        '--save-dir', 'checkpoints/ocrseq',
         # '--dataset-impl', 'lazy',
     ]
 

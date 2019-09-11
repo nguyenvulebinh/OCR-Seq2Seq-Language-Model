@@ -50,7 +50,7 @@ if __name__ == '__main__':
     import scipy.misc
 
     transform = transforms.Compose([
-        ResizeWithPad(width=1280, height=60),
+        ResizeWithPad(width=1280, height=64),
         transforms.ToTensor(),
         transforms.Normalize(mean=[0.485, 0.456, 0.406],
                              std=[0.229, 0.224, 0.225])

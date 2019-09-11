@@ -3,13 +3,15 @@ import importlib
 import os
 
 from plugin.models.text_recognition_encoder import ImageEncoder
-from plugin.models.text_recognition_crnn import TextRecognitionCRNNModel
+from plugin.models.text_recognition_ocrseq import TextRecognitionOCRSeq
+from plugin.models.text_recognition_crnn import TextRecognitionCRNN
 
 MODEL_REGISTRY = {}
 ARCH_MODEL_INV_REGISTRY = {}
 
 __all__ = [
-    'TextRecognitionCRNNModel',
+    'TextRecognitionOCRSeq',
+    'TextRecognitionCRNN',
     'ImageEncoder',
 ]
 

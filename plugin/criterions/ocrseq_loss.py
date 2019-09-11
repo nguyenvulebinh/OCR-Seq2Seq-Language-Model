@@ -4,13 +4,12 @@ import torch.nn.functional as F
 from fairseq.criterions import FairseqCriterion, register_criterion
 
 
-@register_criterion('ctc_loss')
-class CTCLossCriterion(FairseqCriterion):
+@register_criterion('ocrseq_loss')
+class OCRSeqLossCriterion(FairseqCriterion):
 
     def __init__(self, args, task):
         super(FairseqCriterion, self).__init__()
         self.args = args
-        self.task = task
         self.blank_idx = task.target_dictionary.blank()
         self.padding_idx = task.target_dictionary.pad()
 
@@ -22,10 +21,11 @@ class CTCLossCriterion(FairseqCriterion):
         2) the sample size, which is used as the denominator for the gradient
         3) logging outputs to display while training
         """
-        net_output = model(**sample['net_input'])['encoder_output']
-        # net_output_middle = net_output['encoder_output']
-        # net_output_final, _ = net_output['decoder_output']
-        loss = self.compute_loss_ctc(model, net_output, sample, reduction=reduction)
+        net_output = model(**sample['net_input'])
+        net_output_middle = net_output['encoder_output']
+        net_output_final, _ = net_output['decoder_output']
+        loss = self.compute_loss_ctc(model, net_output_middle, sample, reduction=reduction) + \
+               self.compute_cross_entropy_loss(model, net_output_final, sample)
         sample_size = sample['nsentences'] if self.args.sentence_avg else sample['ntokens']
         logging_output = {
             'loss': loss.item(),
@@ -52,10 +52,7 @@ class CTCLossCriterion(FairseqCriterion):
             reduction='mean', zero_infinity=False,
     ):
         log_probs = model.get_normalized_probs(net_output, log_probs=True)
-        if self.args.remove_tone:
-            targets = torch.cat(sample['target_simply'])
-        else:
-            targets = sample['target']
+        targets = torch.cat(sample['target_simply'])  # Expected targets to have CPU Backend
         target_lengths = sample['target_length']
         input_lengths = torch.full((sample['nsentences'],), log_probs.size(0), dtype=torch.int32)
         loss = F.ctc_loss(log_probs, targets, input_lengths, target_lengths,
