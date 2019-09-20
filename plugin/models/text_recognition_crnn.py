@@ -66,7 +66,7 @@ class TextRecognitionCRNN(BaseFairseqModel):
 
         return cls(cnn_encoder, rnn_encoder, projector_middle)
 
-    def forward(self, src_tokens, prev_output_tokens, **kwargs):
+    def forward(self, src_tokens, **kwargs):
         cnn_feature = self.cnn_encoder(src_tokens)
         rnn_feature = self.rnn_encoder(cnn_feature)
         encoder_out = self.projector_middle(rnn_feature)

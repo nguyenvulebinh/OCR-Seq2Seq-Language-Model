@@ -10,7 +10,7 @@ from plugin.data import data_utils
 import os
 from tqdm import tqdm
 
-checkpoint_path = './checkpoint/checkpoint_last.pt'
+checkpoint_path = './checkpoints/ocrseq/checkpoint_best.pt'
 
 
 # image_path = './data-bin/test/'
@@ -57,13 +57,9 @@ if __name__ == '__main__':
     # load param
     ocr_utils.import_user_module('./plugin')
     sys.argv += [
-        './checkpoint/dict',
+        './dicts/ocr',
         '--user-dir', './plugin',
         '--task', 'text_recognition',
-        # '--arch', 'decoder_crnn',
-        # '--decoder-layers', '2',
-        # '--height', '60',
-        # '--width', '1280',
         '--criterion', 'ctc_loss',
     ]
     parser = options.get_generation_parser()
@@ -79,7 +75,7 @@ if __name__ == '__main__':
         model_ocr.cuda()
     print(model_ocr)
 
-    labels, images_list = ocr_utils.load_raw_dataset('./data-bin/test/')
+    labels, images_list = ocr_utils.load_raw_dataset('./data-bin/ocr-dataset/valid/')
     cer = 0
     wer = 0
     for i, _ in enumerate(tqdm(images_list)):

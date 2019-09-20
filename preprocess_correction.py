@@ -109,6 +109,18 @@ def make_spell_error(input_str):
         return raw_input_str
 
 
+def clean_input_correction(raw_input):
+    input_str = raw_input.lower()
+    input_str = visen.remove_tone(input_str)
+    input_str = ' '.join(list(input_str.replace(' ', '|')))
+    return input_str
+
+
+def clean_output_correction(raw_output):
+    output_str = ''.join(list(raw_output.replace(' ', ''))).replace('|', ' ')
+    return output_str
+
+
 if __name__ == '__main__':
     list_address = []
     for item in json_data:

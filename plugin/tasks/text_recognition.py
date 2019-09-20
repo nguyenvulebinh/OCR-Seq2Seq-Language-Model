@@ -126,7 +126,7 @@ class TextRecognitionTask(FairseqTask):
         print('| {} {} {} images'.format(self.args.data, split, len(image_names)))
 
         shuffle = True if split == 'train' else False
-        use_ctc_loss = True if self.args.criterion == 'ctc_loss' else False
+        use_ctc_loss = True if self.args.criterion == 'ctc_loss' or self.args.criterion == 'ocrseq_loss' else False
         self.datasets[split] = TextRecognitionDataset(
             image_names, targets, targets_simply, self.tgt_dict, tgt_sizes=target_lengths,
             shuffle=shuffle, transform=self.transform, use_ctc_loss=use_ctc_loss,
