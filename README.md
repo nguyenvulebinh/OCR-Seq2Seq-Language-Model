@@ -1,7 +1,5 @@
 # Vietnamese handwriting optical character recognition
 
+## Model architecture
 
-
-- fix some error command 'gcc' failed  
-conda install -c anaconda gcc
-
+![model](https://github.com/nguyenvulebinh/OCR-Seq2Seq-Language-Model/blob/master/images/ocrseq_joint.png?raw=true)
